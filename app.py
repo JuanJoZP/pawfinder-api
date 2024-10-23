@@ -116,7 +116,7 @@ def get_posts():
         result.append({
             'id': post.id,
             'caption': post.caption,
-            'image': post.image,
+            'image': base64.b64encode(post.image).decode('utf-8'),  # Encode image to base64 string
             'username': user.username,
             'avatar': user.avatar_url,
             'likes': likes,
