@@ -105,7 +105,7 @@ def get_posts():
     ).outerjoin(User, Post.user_id == User.id) \
      .outerjoin(Like, Post.id == Like.post_id) \
      .filter(Post.category_id == category_id) \
-     .group_by(Post.id).all()
+     .group_by(Post.id, User.id).all()  # Added User.id to GROUP BY
 
     result = []
     for post, user, likes, liked in posts:
