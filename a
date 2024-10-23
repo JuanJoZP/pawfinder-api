@@ -1,0 +1,5 @@
+hostname dpg-csckr62j1k6c739cdge0-a
+port 5432
+database pawfinder_api_db
+username pawfinder_api_db_user
+password ZRtOk1OayazUORp1fihDv7J5QUINaM4W
