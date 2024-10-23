@@ -129,14 +129,15 @@ def get_posts():
 # Get Comments for a Post
 @app.route('/posts/<int:post_id>/comments', methods=['GET'])
 def get_comments(post_id):
-    comments = Comment.query.filter_by(post_id=post_id).join(User).all()
+    comments = Comment.query.filter_by(post_id=post_id) \
+        .join(User, Comment.user_id == User.id).all()  
     result = [{
         'post_id': comment.post_id,
         'id': comment.id,
-        'username': comment.user.username,
+        'username': user.username, 
         'content': comment.content,
         'created_at': comment.created_at
-    } for comment in comments]
+    } for comment, user in comments]  
 
     return jsonify(result), 200
 
