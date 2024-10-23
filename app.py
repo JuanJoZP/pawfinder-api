@@ -49,7 +49,15 @@ def create_post():
                     image=data['image'])
     db.session.add(new_post)
     db.session.commit()
-    return jsonify(message='Post created successfully.'), 201
+
+    # Fetch the user who created the post
+    user = User.query.get(data['user_id'])
+
+    return jsonify(
+        message='Post created successfully.',
+        id=new_post.id,  # Return the ID of the new post
+        username=user.username,
+        avatar_url=user.avatar_url), 201
 
 
 # Create Comment
@@ -84,6 +92,49 @@ def remove_like():
         db.session.commit()
         return jsonify(message='Like removed successfully.'), 200
     return jsonify(message='Like not found.'), 404
+
+
+@app.route('/posts', methods=['GET'])
+def get_posts():
+    category_id = request.args.get('category_id', type=int)
+    user_id = request.args.get('user_id', type=int)
+
+    posts = db.session.query(Post, User,
+        db.func.count(Like.id).label('likes'),
+        db.case([(Like.user_id == user_id, 1)], else_=0).label('liked')
+    ).outerjoin(User, Post.user_id == User.id) \
+     .outerjoin(Like, Post.id == Like.post_id) \
+     .filter(Post.category_id == category_id) \
+     .group_by(Post.id).all()
+
+    result = []
+    for post, user, likes, liked in posts:
+        result.append({
+            'id': post.id,
+            'caption': post.caption,
+            'image': post.image,
+            'username': user.username,
+            'avatar': user.avatar_url,
+            'likes': likes,
+            'liked': liked
+        })
+
+    return jsonify(result), 200
+
+
+# Get Comments for a Post
+@app.route('/posts/<int:post_id>/comments', methods=['GET'])
+def get_comments(post_id):
+    comments = Comment.query.filter_by(post_id=post_id).join(User).all()
+    result = [{
+        'post_id': comment.post_id,
+        'id': comment.id,
+        'username': comment.user.username,
+        'content': comment.content,
+        'created_at': comment.created_at
+    } for comment in comments]
+
+    return jsonify(result), 200
 
 
 # Start the server
