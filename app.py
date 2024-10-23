@@ -3,6 +3,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Post, Comment, Like
+import base64
 
 app = Flask(__name__)
 
@@ -43,10 +44,14 @@ def login():
 @app.route('/posts', methods=['POST'])
 def create_post():
     data = request.json
+    # Decode the base64 image
+    image_data = data['image'].split(',')[1]  # Remove the metadata part if present
+    image_binary = base64.b64decode(image_data)  # Decode the base64 string
+
     new_post = Post(user_id=data['user_id'],
                     category_id=data['category_id'],
                     caption=data['caption'],
-                    image=data['image'])
+                    image=image_binary)  # Save the binary data
     db.session.add(new_post)
     db.session.commit()
 
