@@ -45,6 +45,7 @@ def login():
 def create_post():
     data = request.json
     # Decode the base64 image
+    print(image_data)
     image_data = data['image'].split(',')[1]  # Remove the metadata part if present
     image_binary = base64.b64decode(image_data)  # Decode the base64 string
 
