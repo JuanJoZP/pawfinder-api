@@ -101,7 +101,7 @@ def get_posts():
 
     posts = db.session.query(Post, User,
         db.func.count(Like.id).label('likes'),
-        db.case([(Like.user_id == user_id, 1)], else_=0).label('liked')
+        db.case((Like.user_id == user_id, 1), else_=0).label('liked')
     ).outerjoin(User, Post.user_id == User.id) \
      .outerjoin(Like, Post.id == Like.post_id) \
      .filter(Post.category_id == category_id) \
