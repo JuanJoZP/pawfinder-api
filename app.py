@@ -73,7 +73,7 @@ def create_comment():
                           content=data['content'])
     db.session.add(new_comment)
     db.session.commit()
-    return jsonify(message='Comment created successfully.'), 201
+    return jsonify(message='Comment created successfully.', id=new_comment.id), 201
 
 
 # Create Like
