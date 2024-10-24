@@ -27,7 +27,7 @@ def signup():
                     avatar_url=data['avatar_url'])
     db.session.add(new_user)
     db.session.commit()
-    return jsonify(message='User created successfully.'), 201
+    return jsonify(message='User created successfully.', userId=new_user.id), 201
 
 
 # Login
